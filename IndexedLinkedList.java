@@ -134,8 +134,18 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 
 	@Override
 	public IndexedList<T> filter(Predicate<T> predicate) {
-		// TODO Auto-generated method stub
-		return null;
+		IndexedList<T> filteredList = new IndexedLinkedList<>();
+		T res = null;
+		int j = 0;
+		ListIterator it = new ListIterator();
+		while(it.hasNext()) {
+			res = it.next();
+			if (predicate.test(res)) {
+				filteredList.add(j,res);
+				j++;
+			}
+		}
+		return filteredList;
 	}
 
 	@Override
@@ -305,12 +315,12 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
 		int original = size;
-		Node<T> current = head;
-		ListIterator it = IndexedLinkedList.iterator();
+		T item;
+		ListIterator it = new ListIterator();
 		while(it.hasNext()) {
-			current = (Node<T>) it.next();
-			if(!predicate.test((T) current)) {
-				removeNode(current);
+			item = it.next();
+			if(predicate.test(item)) {
+				it.remove();
 			}
 		} 
 		size = size();	
