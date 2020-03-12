@@ -1,24 +1,32 @@
 package telran.util;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.function.Predicate;
+
+import telran.tests.PersonAgeComparator;
+import telran.util.Array;
 
 //import telran.util.Array.ArrayIterator;
 
 public class IndexedLinkedList<T> implements IndexedList<T> {
 	private static class Node<T> {
 		public T obj;
+		public T[] array;
 		public Node<T> next;
 		public Node<T> prev;
+
 		public Node(T obj) {
 			this.obj = obj;
 		}
 
 	}
 
-	private class ListIterator implements Iterator<T>{
+	private class ListIterator implements Iterator<T> {
 		Node<T> current = head;
+
 		@Override
 		public boolean hasNext() {
 			return current != null;
@@ -30,16 +38,16 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 			current = current.next;
 			return res;
 		}
-		
+
 		@Override
 		public void remove() {
-			if(current == null) {
+			if (current == null) {
 				removeTail();
 			} else {
 				removeNode(current.prev);
 			}
 		}
-		
+
 	}
 
 	private Node<T> head;
@@ -59,6 +67,7 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 
 	@Override
 	public void add(T obj) {
+		T[] array = null;
 		Node<T> newNode = new Node<>(obj);
 		addNodeTail(newNode);
 
@@ -66,6 +75,7 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 
 	@Override
 	public boolean add(int index, T obj) {
+		T[] array = null;
 		boolean res = true;
 		Node<T> newNode = new Node<>(obj);
 
@@ -122,7 +132,10 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 
 	@Override
 	public int binarySearch(T pattern) {
-		// TODO Auto-generated method stub
+		if(T[] array == null) {
+			sort();
+		}
+		T[] array.binarySearch();
 		return 0;
 	}
 
@@ -138,10 +151,10 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 		T res = null;
 		int j = 0;
 		ListIterator it = new ListIterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			res = it.next();
 			if (predicate.test(res)) {
-				filteredList.add(j,res);
+				filteredList.add(j, res);
 				j++;
 			}
 		}
@@ -317,20 +330,25 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 		int original = size;
 		T item;
 		ListIterator it = new ListIterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			item = it.next();
-			if(predicate.test(item)) {
+			if (predicate.test(item)) {
 				it.remove();
 			}
-		} 
-		size = size();	
+		}
+		size = size();
 		return size < original;
 	}
 
 	@Override
 	public Object set(int ind, T newObj) {
-		// TODO Auto-generated method stub
-		return null;
+		T res = null;
+		if (isValidIndex(ind)) {
+			Node<T> nodeRes = getNode(ind);
+			nodeRes.obj = newObj;
+			res = nodeRes.obj;
+		}
+		return res;
 	}
 
 	@Override
@@ -340,8 +358,25 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 
 	@Override
 	public void sort() {
-		// TODO Auto-generated method stub
-
+		Array<T> arrayForSort = new Array<>();
+		T item;
+		size = size();
+		ListIterator it = new ListIterator();
+		for(int i = 0; i <= size;  i++) {
+			if(it.hasNext()) {
+				item = it.next();
+				arrayForSort.add(item);
+			}
+		}
+		//Comparator<T> comp = (Comparator<T>) new PersonAgeComparator();
+		arrayForSort.sort();
+		Array<T> array = arrayForSort;
+		for(int i = 0; i <= size;  i++) {
+			if(it.hasNext()) {
+				item = it.next();
+				set(i,arrayForSort.get(i));
+			}
+		}
 	}
 
 	@Override
