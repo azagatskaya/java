@@ -12,12 +12,11 @@ import telran.util.Array;
 //import telran.util.Array.ArrayIterator;
 
 public class IndexedLinkedList<T> implements IndexedList<T> {
+	public T[] array;
 	private static class Node<T> {
 		public T obj;
-		public T[] array;
 		public Node<T> next;
 		public Node<T> prev;
-
 		public Node(T obj) {
 			this.obj = obj;
 		}
