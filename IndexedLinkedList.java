@@ -6,17 +6,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 
-import telran.tests.PersonAgeComparator;
+//import telran.tests.PersonAgeComparator;
 import telran.util.Array;
 
 //import telran.util.Array.ArrayIterator;
 
 public class IndexedLinkedList<T> implements IndexedList<T> {
-	public T[] array;
+	//public T[] array;
 	private static class Node<T> {
 		public T obj;
 		public Node<T> next;
 		public Node<T> prev;
+
 		public Node(T obj) {
 			this.obj = obj;
 		}
@@ -48,7 +49,7 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 		}
 
 	}
-
+	public Array<T> array;
 	private Node<T> head;
 	private Node<T> tail;
 	private int size;
@@ -131,17 +132,24 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 
 	@Override
 	public int binarySearch(T pattern) {
-		if(T[] array == null) {
+		if(this.array == null) {
 			sort();
+			
 		}
-		T[] array.binarySearch();
-		return 0;
+		int result= this.array.binarySearch(pattern);
+		
+		return result;
 	}
 
 	@Override
 	public int binarySearch(T pattern, Comparator<T> comp) {
-		// TODO Auto-generated method stub
-		return 0;
+		if(this.array == null) {
+			sort(comp);
+			
+		}
+		int result= this.array.binarySearch(pattern, comp);
+		
+		return result;
 	}
 
 	@Override
@@ -357,31 +365,42 @@ public class IndexedLinkedList<T> implements IndexedList<T> {
 
 	@Override
 	public void sort() {
-		Array<T> arrayForSort = new Array<>();
+		Array<T> arrayForSort = new Array<T>();
 		T item;
 		size = size();
 		ListIterator it = new ListIterator();
-		for(int i = 0; i <= size;  i++) {
+		for(int i = 0; i <size;  i++) {
 			if(it.hasNext()) {
 				item = it.next();
 				arrayForSort.add(item);
 			}
 		}
-		//Comparator<T> comp = (Comparator<T>) new PersonAgeComparator();
 		arrayForSort.sort();
-		Array<T> array = arrayForSort;
-		for(int i = 0; i <= size;  i++) {
-			if(it.hasNext()) {
-				item = it.next();
+		this.array = arrayForSort;
+		for(int i = 0; i <size;  i++) 
+		{
 				set(i,arrayForSort.get(i));
-			}
 		}
 	}
 
 	@Override
 	public void sort(Comparator<T> comp) {
-		// TODO Auto-generated method stub
-
+		Array<T> arrayForSort = new Array<T>();
+		T item;
+		size = size();
+		ListIterator it = new ListIterator();
+		for(int i = 0; i <size;  i++) {
+			if(it.hasNext()) {
+				item = it.next();
+				arrayForSort.add(item);
+			}
+		}
+		arrayForSort.sort(comp);
+		this.array = arrayForSort;
+		for(int i = 0; i <size;  i++) 
+		{
+				set(i,arrayForSort.get(i));
+		}
 	}
 
 }
