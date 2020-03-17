@@ -44,7 +44,7 @@ public class HashSetIterator<T> implements Iterator<T>
 				   { 
 					   itemIndex=0;
 				       htIndex++;
-				       if(hashTable[htIndex]==null) { return return next();}
+				       if(hashTable[htIndex]==null) { return next();}
 				    }
 				 itemIndex++;
 				 count++;
