@@ -22,10 +22,22 @@ public HashSet() {
 }
 public class HashSetIterator<T> implements Iterator<T> 
 { 
-int index=0;
-IndexedList<T> current=hashTable[index];
-Iterator<T> iter=current.iterator();
+int index = 0;
+		IndexedList<T> current; // = hashTable[index];
+		Iterator<T> iter = current.iterator();
 		
+		public void getNotEmptyTable() {
+			
+			for (int i = index; i < hashTable.length; i++) {
+				if (hashTable[i] != null && hashTable[i].size() > 0) {
+					current = hashTable[i];
+					iter = current.iterator();
+					index = i;
+					break;
+				}
+			}
+		}
+
 		@Override
 		public boolean hasNext() {
 			return (iter.hasNext()) ? true : false;
@@ -37,22 +49,11 @@ Iterator<T> iter=current.iterator();
 				return iter.next();
 			} else {
 				index++;
-				for (int i = index; i < hashTable.length; i++) {
-					if (hashTable[i] != null && hashTable[i].size() > 0) {
-						current = hashTable[i];
-						iter = current.iterator();
-						index = i;
-						break;
-
-					}
-
-				}
+				getNotEmptyTable();
 				return next();
-
 			}
-
 		}
-
+	
 		@Override
 		public void remove() {
 			iter.remove();
