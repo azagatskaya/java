@@ -34,32 +34,29 @@ public class HashSetIterator<T> implements Iterator<T>
 	}
 
 	@Override
-	public T next() 
-	{   
-		if(count < size) 
-		{
-			if(hashTable[htIndex]!=null|hashTable[htIndex].size()>0) 
-			{
-				if(itemIndex >= hashTable[htIndex].size())
-				   { 
-					   itemIndex=0;
-				       htIndex++;
-				       if(hashTable[htIndex]==null) { return next();}
-				    }
-				 itemIndex++;
-				 count++;
-				 return (T) hashTable[htIndex][itemIndex-1]; 
+		public T next() {
+			if (count < size) {
+				if (hashTable[htIndex] != null | hashTable[htIndex].size() > 0) {
+					if (itemIndex >= hashTable[htIndex].size()) {
+						itemIndex = 0;
+						htIndex++;
+						if (hashTable[htIndex] == null) {
+							return next();
+						}
+					}
+					itemIndex++;
+					count++;
+					return (T) hashTable[htIndex][itemIndex - 1];
+				} else {
+					htIndex++;
+					return next();
+				}
+			} else {
+				return null;
 			}
-			else {htIndex++; return next(); }
-	    
-		
-	   
-	   
-	   
+
 		}
-		else {return null;}
-	   
-	}
+
 	
 	@Override
 	public void remove() {
