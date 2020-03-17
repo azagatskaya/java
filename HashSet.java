@@ -23,43 +23,39 @@ public HashSet() {
 public class HashSetIterator<T> implements Iterator<T> 
 { 
 int index=0;
-		IndexedList<T> current=hashTable[index];
-		Iterator<T> iter=current.iterator();
+IndexedList<T> current=hashTable[index];
+Iterator<T> iter=current.iterator();
 		
 		@Override
-		public boolean hasNext() 
-		{
+		public boolean hasNext() {
 			return (iter.hasNext()) ? true : false;
 		}
+
 		@Override
-		public T next()
-		{ if(iter.hasNext())
-		{
-			return iter.next();
+		public T next() {
+			if (iter.hasNext()) {
+				return iter.next();
+			} else {
+				index++;
+				for (int i = index; i < hashTable.length; i++) {
+					if (hashTable[i] != null && hashTable[i].size() > 0) {
+						current = hashTable[i];
+						iter = current.iterator();
+						index = i;
+						break;
+
+					}
+
+				}
+				return next();
+
+			}
+
 		}
-		else 
-		{   index++;
-			for(int i=index; i<hashTable.length; i++ )
-		{
-			if(hashTable[i]!=null&&hashTable[i].size()>0) 
-		{
-			current=hashTable[i];
-			iter=current.iterator();
-			index=i;
-			break;
-			
-		}
-			
-			
-		}
-		return next();		
-			
-		}
-			
-			
-		}
+
 		@Override
-		public void remove() {iter.remove();}
+		public void remove() {
+			iter.remove();
 	
 }
 @Override
