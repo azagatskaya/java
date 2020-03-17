@@ -60,7 +60,7 @@ public class HashSetIterator<T> implements Iterator<T>
 	
 	@Override
 	public void remove() {
-		 if(hashTable[htIndex]!=null && 0 <=itemIndex-1 < hashTable[htIndex].size())
+		 if(hashTable[htIndex]!=null && 0 <= itemIndex - 1 &&  itemIndex - 1 < hashTable[htIndex].size())
 		   { 
 			   hashTable[htIndex].remove(itemIndex-1);
 		       itemIndex--;
