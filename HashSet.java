@@ -22,53 +22,44 @@ public HashSet() {
 }
 public class HashSetIterator<T> implements Iterator<T> 
 { 
-	//hashTable.ListIterator iterator=new hashTable.ListIterator();
-	
-	int count = 0;
-	int htIndex = 0;
-	int itemIndex = 0;
-	@Override
-	public boolean hasNext() {
+int index=0;
+		IndexedList<T> current=hashTable[index];
+		Iterator<T> iter=current.iterator();
 		
-		return count < size;
-	}
-
-	@Override
-		public T next() {
-			if (count < size) {
-				if (hashTable[htIndex] != null | hashTable[htIndex].size() > 0) {
-					if (itemIndex >= hashTable[htIndex].size()) {
-						itemIndex = 0;
-						htIndex++;
-						if (hashTable[htIndex] == null) {
-							return next();
-						}
-					}
-					itemIndex++;
-					count++;
-					return (T) hashTable[htIndex][itemIndex - 1];
-				} else {
-					htIndex++;
-					return next();
-				}
-			} else {
-				return null;
-			}
-
+		@Override
+		public boolean hasNext() 
+		{
+			return (iter.hasNext()) ? true : false;
 		}
-
-	
-	@Override
-	public void remove() {
-		 if(hashTable[htIndex]!=null && 0 <= itemIndex - 1 &&  itemIndex - 1 < hashTable[htIndex].size())
-		   { 
-			   hashTable[htIndex].remove(itemIndex-1);
-		       itemIndex--;
-		       count--;
-		       size--;
-	       }
-		
-	}
+		@Override
+		public T next()
+		{ if(iter.hasNext())
+		{
+			return iter.next();
+		}
+		else 
+		{   index++;
+			for(int i=index; i<hashTable.length; i++ )
+		{
+			if(hashTable[i]!=null&&hashTable[i].size()>0) 
+		{
+			current=hashTable[i];
+			iter=current.iterator();
+			index=i;
+			break;
+			
+		}
+			
+			
+		}
+		return next();		
+			
+		}
+			
+			
+		}
+		@Override
+		public void remove() {iter.remove();}
 	
 }
 @Override
