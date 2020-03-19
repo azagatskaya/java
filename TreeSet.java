@@ -71,14 +71,11 @@ public class TreeSet<T> implements Set<T> {
 		// going to left -> current = current.left
 		// going to right -> current = current.right
 		// node from which you have come to null will be parent
-		if (size == 1) {
-			return root;
-		}
 		Node<T> current = root;
 		Node<T> prevNode = current;
 		while(current != null) {
 			prevNode = current;
-			if (comparator.compare(obj, current.obj) < 0) {
+			if (comparator.compare(obj, current.obj) < 0 && obj.equals(current.obj)) {
 				current = current.left;
 			} else {
 				current = current.right;
