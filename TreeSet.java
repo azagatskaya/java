@@ -156,20 +156,21 @@ public class TreeSet<T> implements Set<T> {
 		size--;
 	}
 
-	private void removeNonJunctionNode(Node<T> node) {
+private void removeNonJunctionNode(Node<T> node) {
 		Node<T> child = new Node<>(null);
 		child = node.left != null ? node.left : node.right;
-		if(node.parent == null) {
-			if(child != null) {
+		if (node.parent == null) {
+			if (child != null) {
 				child.parent = null;
 				child = root;
 			}
-		} else if(node.parent.left == node) {
-			node.parent.left = node.right;
+		} else if (child != null) {
 			child.parent = node.parent;
-		} else {
-			node.parent.right = node.right;
-			child.parent = node.parent;
+			if (node.parent.left == node) {
+				node.parent.left = node.right;
+			} else {
+				node.parent.right = node.right;
+			}
 		}
 	}
 
