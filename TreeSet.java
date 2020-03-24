@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-public class TreeSet<T> implements Set<T> {
+public class TreeSet<T> implements SortedSet<T> {
 	private static class Node<T> {
 		T obj;
 		Node<T> parent;
@@ -31,7 +31,7 @@ public class TreeSet<T> implements Set<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		
+
 		return new TreeIterator();
 	}
 
@@ -80,14 +80,20 @@ public class TreeSet<T> implements Set<T> {
 				break;
 			}
 			current = resComp < 0 ? current.left : current.right;
+
 		}
 		return parent;
 	}
 
 	@Override
 	public Set<T> filter(Predicate<T> predicate) {
-		// TODO Auto-generated method stub
-		return null;
+		TreeSet<T> res = new TreeSet<>();
+		for (T obj : this) {
+			if (predicate.test(obj)) {
+				res.add(obj);
+			}
+		}
+		return res;
 	}
 
 	@Override
@@ -101,34 +107,25 @@ public class TreeSet<T> implements Set<T> {
 		return res;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Node<T> findNode(Object pattern) {
-		
 		Node<T> current = root;
-		Node<T> foundNode = null;
-		while (current != null) {
-			int resComp = comparator.compare((T) pattern, current.obj);
-			if (resComp == 0) {
-				foundNode = current;
-				break;
-			}
-			current = resComp < 0 ? current.left : current.right;
+		int compRes;
+		while (current != null && (compRes = comparator.compare((T) pattern, current.obj)) != 0) {
+			current = compRes < 0 ? current.left : current.right;
 		}
-		return foundNode;
-	}
-
-	@Override
-	public boolean removeIf(Predicate<T> predicate) {
-		// TODO Auto-generated method stub
-		return false;
+		return current;
 	}
 
 	@Override
 	public int size() {
+
 		return size;
 	}
 
 	@Override
 	public boolean contains(T pattern) {
+
 		return size > 0 && getParent(pattern) == null;
 	}
 
@@ -146,6 +143,7 @@ public class TreeSet<T> implements Set<T> {
 		}
 		return node.parent;
 	}
+
 	private void removeNode(Node<T> node) {
 		if (isJunction(node)) {
 			Node<T> substitute = getLeastNode(node.right);
@@ -156,30 +154,32 @@ public class TreeSet<T> implements Set<T> {
 		size--;
 	}
 
-private void removeNonJunctionNode(Node<T> node) {
-		Node<T> child = new Node<>(null);
-		child = node.left != null ? node.left : node.right;
-		if (node.parent == null) {
-			if (child != null) {
-				child.parent = null;
-				child = root;
-			}
-		} else if (child != null) {
-			child.parent = node.parent;
-			if (node.parent.left == node) {
-				node.parent.left = node.right;
-			} else {
-				node.parent.right = node.right;
-			}
+	private void removeNonJunctionNode(Node<T> node) {
+
+		Node<T> parent = node.parent;
+		Node<T> child = node.left == null ? node.right : node.left;
+		if (parent == null) {
+			// removing root as non-junction node
+			root = child;
+
+		} else if (parent.left == node) {
+			parent.left = child;
+		} else
+			parent.right = child;
+		if (child != null) {
+			child.parent = parent;
 		}
+
 	}
 
 	private boolean isJunction(Node<T> node) {
+
 		return node.left != null && node.right != null;
 	}
 
 	private class TreeIterator implements Iterator<T> {
-		Node<T> current = getLeastNode(root);
+		Node<T> current = root != null ? getLeastNode(root) : null;
+		Node<T> previous;
 
 		@Override
 		public boolean hasNext() {
@@ -189,15 +189,82 @@ private void removeNonJunctionNode(Node<T> node) {
 		@Override
 		public T next() {
 			T res = current.obj;
-			current = current.right != null ? getLeastNode(current.right) :
-				getParentFromLeft(current);
+			previous = current;
+			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
 			return res;
 		}
 
 		@Override
 		public void remove() {
-			// TODO
+			if (isJunction(previous)) {
+				current = previous;
+			}
+			removeNode(previous);
 		}
 	}
+
+	@Override
+	public T getMin() {
+		return getLeastNode(root).obj;
+	}
+
+	@Override
+	public T getMax() {
+		Node<T> current = root;
+		while (current.right != null) {
+			current = current.right;
+		}
+		return current.obj;
+	}
+
+	@Override
+	public SortedSet<T> subset(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
+
+		SortedSet<T> sortedSet = new TreeSet<>();
+		int fromRes, toRes;
+		Node<T> current = root != null ? getLeastNode(root) : null;
+		while (current != null) { 
+			T res = current.obj;
+			fromRes = comparator.compare(from, res); // 1: from > res; -1: from < res;
+			toRes = comparator.compare(to, res);
+			if (toRes == -1) {
+				break;
+			}
+			if (isIncludedFrom == true && isIncludedTo == true) {
+				if (fromRes == 0 || toRes == 0 || (fromRes < 0 && toRes > 0)) {  
+					sortedSet.add(current.obj);
+				}
+			} else if (isIncludedFrom == false && isIncludedTo == false) {
+				if (fromRes < 0 && toRes > 0) {
+					sortedSet.add(current.obj);
+				}
+			} else if (isIncludedFrom == true && isIncludedTo == false) {
+				if (fromRes == 0 || (fromRes < 0 && toRes > 0)) {
+					sortedSet.add(current.obj);
+				}
+			} else if (isIncludedFrom == false && isIncludedTo == true) {
+				if (toRes == 0 || (fromRes < 0 && toRes > 0)) {
+					sortedSet.add(current.obj);
+				}
+			}
+			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+			
+		}
+		return sortedSet;
+	}
+
+//	@Override
+//	public SortedSet<T> head(T key, boolean isIncluded) {
+//		SortedSet<T> headSet = new TreeSet<>();
+//		headSet = subset(getMin(),true,key,isIncluded);
+//		return headSet;
+//	}
+//
+//	@Override
+//	public SortedSet<T> tail(T key, boolean isIncluded) {
+//		SortedSet<T> tailSet = new TreeSet<>();
+//		tailSet = subset(key,isIncluded,getMax(),true);
+//		return tailSet;
+//	}
 
 }
