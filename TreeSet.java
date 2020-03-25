@@ -222,49 +222,31 @@ public class TreeSet<T> implements SortedSet<T> {
 
 		SortedSet<T> sortedSet = new TreeSet<>();
 		int fromRes, toRes;
-		Node<T> current = root != null ? getLeastNode(root) : null;
-		while (current != null) { 
-			T res = current.obj;
+		Iterator<T> it = iterator();
+		toRes = -1;
+		while (it.hasNext() && toRes < 0) {  
+			T res = it.next();
 			fromRes = comparator.compare(from, res); // 1: from > res; -1: from < res;
-			toRes = comparator.compare(to, res);
-			if (toRes == -1) {
-				break;
+			if (fromRes == 0 && isIncludedFrom == true) {
+				sortedSet.add(res);
 			}
-			if (isIncludedFrom == true && isIncludedTo == true) {
-				if (fromRes == 0 || toRes == 0 || (fromRes < 0 && toRes > 0)) {  
-					sortedSet.add(current.obj);
-				}
-			} else if (isIncludedFrom == false && isIncludedTo == false) {
-				if (fromRes < 0 && toRes > 0) {
-					sortedSet.add(current.obj);
-				}
-			} else if (isIncludedFrom == true && isIncludedTo == false) {
-				if (fromRes == 0 || (fromRes < 0 && toRes > 0)) {
-					sortedSet.add(current.obj);
-				}
-			} else if (isIncludedFrom == false && isIncludedTo == true) {
-				if (toRes == 0 || (fromRes < 0 && toRes > 0)) {
-					sortedSet.add(current.obj);
+			if (fromRes < 0) {
+				toRes = comparator.compare(to, res); // 1: to > res; -1: to < res;
+				while (toRes > 0 || toRes == 0) {
+					if (toRes == 0) {
+						if (isIncludedTo == true) {
+							sortedSet.add(res);
+							break;
+						} else {
+							break;
+						}
+					}
+					sortedSet.add(res);
+					res = it.next();
+					toRes = comparator.compare(to, res);
 				}
 			}
-			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-			
 		}
 		return sortedSet;
 	}
-
-//	@Override
-//	public SortedSet<T> head(T key, boolean isIncluded) {
-//		SortedSet<T> headSet = new TreeSet<>();
-//		headSet = subset(getMin(),true,key,isIncluded);
-//		return headSet;
-//	}
-//
-//	@Override
-//	public SortedSet<T> tail(T key, boolean isIncluded) {
-//		SortedSet<T> tailSet = new TreeSet<>();
-//		tailSet = subset(key,isIncluded,getMax(),true);
-//		return tailSet;
-//	}
-
 }
