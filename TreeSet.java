@@ -221,11 +221,12 @@ public class TreeSet<T> implements SortedSet<T> {
 	public SortedSet<T> subset(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
 
 		SortedSet<T> sortedSet = new TreeSet<>();
+		Node<T> current = findNode(from);
+		current = current == null ? getParent(from) : current; 
 		int fromRes, toRes;
-		Iterator<T> it = iterator();
 		toRes = -1;
-		while (it.hasNext() && toRes < 0) {  
-			T res = it.next();
+		while (current != null) { // && toRes < 0) {  
+			T res = current.obj;
 			fromRes = comparator.compare(from, res); // 1: from > res; -1: from < res;
 			if (fromRes == 0 && isIncludedFrom == true) {
 				sortedSet.add(res);
@@ -242,10 +243,12 @@ public class TreeSet<T> implements SortedSet<T> {
 						}
 					}
 					sortedSet.add(res);
-					res = it.next();
+					current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+					res = current.obj;
 					toRes = comparator.compare(to, res);
 				}
 			}
+			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
 		}
 		return sortedSet;
 	}
