@@ -225,7 +225,7 @@ public class TreeSet<T> implements SortedSet<T> {
 		current = current == null ? getParent(from) : current; 
 		int fromRes, toRes;
 		toRes = -1;
-		while (current != null) { // && toRes < 0) {  
+		while (current != null) {  
 			T res = current.obj;
 			fromRes = comparator.compare(from, res); // 1: from > res; -1: from < res;
 			if (fromRes == 0 && isIncludedFrom == true) {
