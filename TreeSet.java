@@ -222,33 +222,29 @@ public class TreeSet<T> implements SortedSet<T> {
 
 		SortedSet<T> sortedSet = new TreeSet<>();
 		Node<T> current = findNode(from);
-		current = current == null ? getParent(from) : current; 
+		current = current == null ? getParent(from) : current;
 		int fromRes, toRes;
-		toRes = -1;
-		while (current != null) {  
-			T res = current.obj;
-			fromRes = comparator.compare(from, res); // 1: from > res; -1: from < res;
-			if (fromRes == 0 && isIncludedFrom == true) {
-				sortedSet.add(res);
-			}
-			if (fromRes < 0) {
-				toRes = comparator.compare(to, res); // 1: to > res; -1: to < res;
-				while (toRes > 0 || toRes == 0) {
-					if (toRes == 0) {
-						if (isIncludedTo == true) {
-							sortedSet.add(res);
-							break;
-						} else {
-							break;
-						}
-					}
+		T res = current.obj;
+		fromRes = comparator.compare(from, res); // 1: from > res; -1: from < res;
+		if ((fromRes == 0 && isIncludedFrom == true) || fromRes < 0) {
+			sortedSet.add(res);
+		}
+		current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+		res = current.obj;
+		toRes = comparator.compare(to, res); // 1: to > res; -1: to < res;
+		while (toRes > 0 || toRes == 0) {
+			if (toRes == 0) {
+				if (isIncludedTo == true) {
 					sortedSet.add(res);
-					current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-					res = current.obj;
-					toRes = comparator.compare(to, res);
+					break;
+				} else {
+					break;
 				}
 			}
+			sortedSet.add(res);
 			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+			res = current.obj;
+			toRes = comparator.compare(to, res);
 		}
 		return sortedSet;
 	}
