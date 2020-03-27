@@ -224,27 +224,24 @@ public class TreeSet<T> implements SortedSet<T> {
 		Node<T> current = findNode(from);
 		current = current == null ? getParent(from) : current;
 		int fromRes, toRes;
-		T res = current.obj;
-		fromRes = comparator.compare(from, res); // 1: from > res; -1: from < res;
+		fromRes = comparator.compare(from, current.obj); // 1: from > res; -1: from < res;
 		if ((fromRes == 0 && isIncludedFrom == true) || fromRes < 0) {
-			sortedSet.add(res);
+			sortedSet.add(current.obj);
 		}
 		current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-		res = current.obj;
-		toRes = comparator.compare(to, res); // 1: to > res; -1: to < res;
+		toRes = comparator.compare(to, current.obj); // 1: to > res; -1: to < res;
 		while (toRes > 0 || toRes == 0) {
 			if (toRes == 0) {
 				if (isIncludedTo == true) {
-					sortedSet.add(res);
+					sortedSet.add(current.obj);
 					break;
 				} else {
 					break;
 				}
 			}
-			sortedSet.add(res);
+			sortedSet.add(current.obj);
 			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-			res = current.obj;
-			toRes = comparator.compare(to, res);
+			toRes = comparator.compare(to, current.obj);
 		}
 		return sortedSet;
 	}
