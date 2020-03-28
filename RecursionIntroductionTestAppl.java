@@ -3,7 +3,7 @@ public class RecursionIntroductionTestAppl {
 
 	public static void main(String[] args) {
 		// System.out.println(factorial(6));
-		System.out.println(pow(5, 3)); //возведение в степень
+		System.out.println(pow(5, 3)); 
 		//int ar[] = {10,5,20,15};
 		//System.out.println(sum(ar));
 		//System.out.println(square(2));
@@ -61,9 +61,9 @@ public class RecursionIntroductionTestAppl {
 		}
 		return x + square(x-1) + (x-1);
 	}
-	//1) в индекслинкед лист написать паблик функцию и тест в общий тест
-	// реверс линкедлиста используя рекурсию
-	// индексет лист тестс 
+	//1) Гў ГЁГ­Г¤ГҐГЄГ±Г«ГЁГ­ГЄГҐГ¤ Г«ГЁГ±ГІ Г­Г ГЇГЁГ±Г ГІГј ГЇГ ГЎГ«ГЁГЄ ГґГіГ­ГЄГ¶ГЁГѕ ГЁ ГІГҐГ±ГІ Гў Г®ГЎГ№ГЁГ© ГІГҐГ±ГІ
+	// Г°ГҐГўГҐГ°Г± Г«ГЁГ­ГЄГҐГ¤Г«ГЁГ±ГІГ  ГЁГ±ГЇГ®Г«ГјГ§ГіГї Г°ГҐГЄГіГ°Г±ГЁГѕ
+	// ГЁГ­Г¤ГҐГЄГ±ГҐГІ Г«ГЁГ±ГІ ГІГҐГ±ГІГ± 
 	//2) write method long pow(int, int)
 	//no cycles, no operator *, just + -
 	//3) write long square(int x)
