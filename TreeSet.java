@@ -1,5 +1,6 @@
 package telran.util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Predicate;
@@ -15,6 +16,8 @@ public class TreeSet<T> implements SortedSet<T> {
 			this.obj = obj;
 		}
 	}
+
+	private static final int SPACES_PER_LEVEL = 2;
 
 	Comparator<T> comparator;
 	Node<T> root;
@@ -155,7 +158,6 @@ public class TreeSet<T> implements SortedSet<T> {
 	}
 
 	private void removeNonJunctionNode(Node<T> node) {
-
 		Node<T> parent = node.parent;
 		Node<T> child = node.left == null ? node.right : node.left;
 		if (parent == null) {
@@ -183,6 +185,7 @@ public class TreeSet<T> implements SortedSet<T> {
 
 		@Override
 		public boolean hasNext() {
+
 			return current != null;
 		}
 
@@ -205,44 +208,185 @@ public class TreeSet<T> implements SortedSet<T> {
 
 	@Override
 	public T getMin() {
-		return getLeastNode(root).obj;
+
+		return root != null ? getLeastNode(root).obj : null;
 	}
 
 	@Override
 	public T getMax() {
-		Node<T> current = root;
-		while (current.right != null) {
-			current = current.right;
+
+		return root != null ? getMostNode(root).obj : null;
+	}
+
+	private Node<T> getMostNode(Node<T> node) {
+		while (node.right != null) {
+			node = node.right;
 		}
-		return current.obj;
+
+		return node;
 	}
 
 	@Override
 	public SortedSet<T> subset(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
 
-		SortedSet<T> sortedSet = new TreeSet<>();
-		Node<T> current = findNode(from);
-		current = current == null ? getParent(from) : current;
-		int fromRes, toRes;
-		fromRes = comparator.compare(from, current.obj); // 1: from > res; -1: from < res;
-		if ((fromRes == 0 && isIncludedFrom == true) || fromRes < 0) {
-			sortedSet.add(current.obj);
+		SortedSet<T> res = new TreeSet<>(comparator);
+		if (isValidArguments(from, isIncludedFrom, to, isIncludedTo)) {
+			Node<T> nodeFrom = findClosestGreaterEqual(from, isIncludedFrom);
+			res = nodeFrom == null ? res : getSetFromNodeToObject(res, nodeFrom, to, isIncludedTo);
 		}
-		current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-		toRes = comparator.compare(to, current.obj); // 1: to > res; -1: to < res;
-		while (toRes > 0 || toRes == 0) {
-			if (toRes == 0) {
-				if (isIncludedTo == true) {
-					sortedSet.add(current.obj);
-					break;
-				} else {
-					break;
-				}
-			}
-			sortedSet.add(current.obj);
-			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-			toRes = comparator.compare(to, current.obj);
-		}
-		return sortedSet;
+		return res;
+
 	}
+
+//	@Override
+//	public SortedSet<T> subset(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
+//		SortedSet<T> sortedSet = new TreeSet<>();
+//		Node<T> current = findNode(from);
+//		current = current == null ? getParent(from) : current;
+//		int fromRes, toRes;
+//		fromRes = comparator.compare(from, current.obj); // 1: from > res; -1: from < res;
+//		if ((fromRes == 0 && isIncludedFrom == true) || fromRes < 0) {
+//			sortedSet.add(current.obj);
+//		}
+//		current = getNext(current);//current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+//		toRes = comparator.compare(to, current.obj); // 1: to > res; -1: to < res;
+//		while (toRes > 0 || toRes == 0) {
+//			if (toRes == 0) {
+//				if (isIncludedTo == true) {
+//					sortedSet.add(current.obj);
+//					break;
+//				} else {
+//					break;
+//				}
+//			}
+//			sortedSet.add(current.obj);
+//			current = getNext(current);// current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+//			toRes = comparator.compare(to, current.obj);
+//		}
+//		return sortedSet;
+//	}
+
+	private boolean isValidArguments(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
+		if (from == null || to == null)
+			return false;
+		int compRes = comparator.compare(from, to);
+		return compRes < 0 || (compRes == 0 && isIncludedFrom && isIncludedTo);
+	}
+
+	private SortedSet<T> getSetFromNodeToObject(SortedSet<T> set, Node<T> nodeFrom, T to, boolean isIncluded) {
+		SortedSet<T> res = set;
+		Node<T> node = nodeFrom;
+		while (node != null) {
+			res.add(node.obj);
+			node = getNext(node, to, isIncluded);
+		}
+		return res;
+	}
+
+	private Node<T> getNext(Node<T> current, T to, boolean isIncluded) {
+		Node<T> res = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+		if (res == null) {
+			return null;
+		}
+		int compRes = comparator.compare(to, res.obj);
+		return compRes < 0 || (compRes == 0 && !isIncluded) ? null : res;
+	}
+
+	private Node<T> findClosestGreaterEqual(T pattern, boolean isIncluded) {
+		Node<T> current = root;
+		Node<T> res = null;
+		while (current != null) {
+			int resComp = comparator.compare(pattern, current.obj);
+			if (resComp < 0) {
+				res = current;
+				current = current.left;
+			} else if (resComp > 0) {
+				current = current.right;
+			} else {
+				if (isIncluded) {
+					res = current;
+				} else {
+					if (current.right != null) {
+						res = getLeastNode(current.right);
+					}
+				}
+				break;
+			}
+		}
+		return res;
+	}
+
+	public void rotatedTreeDisplay() {
+		rotatedDisplay(root, 0);
+
+	}
+
+	public int height() {
+		return height(root);
+	}
+
+	private int height(Node<T> root) {
+		int res = 0;
+		if (root != null) {
+			int heightRight = height(root.right);// height of the right subtree
+			int heightLeft = height(root.left);
+			res = 1 + Math.max(heightRight, heightLeft);
+		}
+
+		return res;
+
+	}
+
+	public int width() {
+		return width(root);
+	}
+
+	private int width(Node<T> root) {
+		if (root == null) {
+			return 0;
+		}
+		if (root.left == null && root.right == null) {
+			return 1;
+		}
+		return width(root.left) + width(root.right);
+	}
+
+	private void rotatedDisplay(Node<T> root, int level) {
+		if (root != null) {
+			rotatedDisplay(root.right, level + 1);
+			displayRoot(root, level);
+			rotatedDisplay(root.left, level + 1);
+		}
+
+	}
+
+	private void displayRoot(Node<T> root, int level) {
+		printOffset(level);
+		System.out.println(root.obj);
+
+	}
+
+	private void printOffset(int level) {
+		int limit = level * SPACES_PER_LEVEL;
+		for (int i = 0; i < limit; i++) {
+			System.out.print(" ");
+		}
+
+	}
+
+	public ArrayList<ArrayList<T>> getObjectsByLevels() {
+		ArrayList<ArrayList<T>> levelsArray = new ArrayList<>();
+		int level = 0;
+		checkLevel(root, level, levelsArray);
+		return levelsArray;
+	}
+
+	private void checkLevel(Node<T> root, int level, ArrayList<ArrayList<T>> levelsArray) {
+		if (root != null) {
+			checkLevel(root.right, level + 1, levelsArray);
+			levelsArray.get(level).add(root.obj);
+			checkLevel(root.left, level + 1, levelsArray);
+		}
+	}
+
 }
