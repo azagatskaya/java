@@ -5,13 +5,15 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import telran.util.TreePresentation.Node;
+
 public class TreeSet<T> implements SortedSet<T> {
 	private static class Node<T> {
 		T obj;
 		Node<T> parent;
 		Node<T> left; // reference to a less (relative to comparator)
 		Node<T> right; // reference to a greater
-
+		
 		public Node(T obj) {
 			this.obj = obj;
 		}
@@ -34,7 +36,7 @@ public class TreeSet<T> implements SortedSet<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-
+		
 		return new TreeIterator();
 	}
 
@@ -91,8 +93,8 @@ public class TreeSet<T> implements SortedSet<T> {
 	@Override
 	public Set<T> filter(Predicate<T> predicate) {
 		TreeSet<T> res = new TreeSet<>();
-		for (T obj : this) {
-			if (predicate.test(obj)) {
+		for(T obj: this) {
+			if(predicate.test(obj)) {
 				res.add(obj);
 			}
 		}
@@ -114,15 +116,18 @@ public class TreeSet<T> implements SortedSet<T> {
 	private Node<T> findNode(Object pattern) {
 		Node<T> current = root;
 		int compRes;
-		while (current != null && (compRes = comparator.compare((T) pattern, current.obj)) != 0) {
+		while(current != null && (compRes =
+				comparator.compare((T)pattern, current.obj)) != 0) {
 			current = compRes < 0 ? current.left : current.right;
 		}
 		return current;
 	}
 
+	
+
 	@Override
 	public int size() {
-
+		
 		return size;
 	}
 
@@ -146,7 +151,6 @@ public class TreeSet<T> implements SortedSet<T> {
 		}
 		return node.parent;
 	}
-
 	private void removeNode(Node<T> node) {
 		if (isJunction(node)) {
 			Node<T> substitute = getLeastNode(node.right);
@@ -159,30 +163,30 @@ public class TreeSet<T> implements SortedSet<T> {
 
 	private void removeNonJunctionNode(Node<T> node) {
 		Node<T> parent = node.parent;
-		Node<T> child = node.left == null ? node.right : node.left;
+		Node<T> child = node.left == null ? node.right :
+			node.left;
 		if (parent == null) {
-			// removing root as non-junction node
+			//removing root as non-junction node
 			root = child;
-
+			
 		} else if (parent.left == node) {
 			parent.left = child;
-		} else
-			parent.right = child;
+		} else parent.right = child;
 		if (child != null) {
 			child.parent = parent;
 		}
-
+		
+		
 	}
 
 	private boolean isJunction(Node<T> node) {
-
+		
 		return node.left != null && node.right != null;
 	}
 
 	private class TreeIterator implements Iterator<T> {
 		Node<T> current = root != null ? getLeastNode(root) : null;
 		Node<T> previous;
-
 		@Override
 		public boolean hasNext() {
 
@@ -193,13 +197,14 @@ public class TreeSet<T> implements SortedSet<T> {
 		public T next() {
 			T res = current.obj;
 			previous = current;
-			current = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
+			current = current.right != null ? getLeastNode(current.right) :
+				getParentFromLeft(current);
 			return res;
 		}
 
 		@Override
 		public void remove() {
-			if (isJunction(previous)) {
+			if(isJunction(previous)) {
 				current = previous;
 			}
 			removeNode(previous);
@@ -208,13 +213,13 @@ public class TreeSet<T> implements SortedSet<T> {
 
 	@Override
 	public T getMin() {
-
+		
 		return root != null ? getLeastNode(root).obj : null;
 	}
 
 	@Override
 	public T getMax() {
-
+		
 		return root != null ? getMostNode(root).obj : null;
 	}
 
@@ -222,49 +227,23 @@ public class TreeSet<T> implements SortedSet<T> {
 		while (node.right != null) {
 			node = node.right;
 		}
-
+		
 		return node;
 	}
 
 	@Override
-	public SortedSet<T> subset(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
-
+	public SortedSet<T> subset(T from, boolean isIncludedFrom,
+			T to, boolean isIncludedTo) {
+		
 		SortedSet<T> res = new TreeSet<>(comparator);
 		if (isValidArguments(from, isIncludedFrom, to, isIncludedTo)) {
 			Node<T> nodeFrom = findClosestGreaterEqual(from, isIncludedFrom);
-			res = nodeFrom == null ? res : getSetFromNodeToObject(res, nodeFrom, to, isIncludedTo);
+			res =  nodeFrom == null ? res : getSetFromNodeToObject(res, nodeFrom, to,
+					isIncludedTo);
 		}
 		return res;
-
+		
 	}
-
-//	@Override
-//	public SortedSet<T> subset(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
-//		SortedSet<T> sortedSet = new TreeSet<>();
-//		Node<T> current = findNode(from);
-//		current = current == null ? getParent(from) : current;
-//		int fromRes, toRes;
-//		fromRes = comparator.compare(from, current.obj); // 1: from > res; -1: from < res;
-//		if ((fromRes == 0 && isIncludedFrom == true) || fromRes < 0) {
-//			sortedSet.add(current.obj);
-//		}
-//		current = getNext(current);//current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-//		toRes = comparator.compare(to, current.obj); // 1: to > res; -1: to < res;
-//		while (toRes > 0 || toRes == 0) {
-//			if (toRes == 0) {
-//				if (isIncludedTo == true) {
-//					sortedSet.add(current.obj);
-//					break;
-//				} else {
-//					break;
-//				}
-//			}
-//			sortedSet.add(current.obj);
-//			current = getNext(current);// current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-//			toRes = comparator.compare(to, current.obj);
-//		}
-//		return sortedSet;
-//	}
 
 	private boolean isValidArguments(T from, boolean isIncludedFrom, T to, boolean isIncludedTo) {
 		if (from == null || to == null)
@@ -273,10 +252,11 @@ public class TreeSet<T> implements SortedSet<T> {
 		return compRes < 0 || (compRes == 0 && isIncludedFrom && isIncludedTo);
 	}
 
-	private SortedSet<T> getSetFromNodeToObject(SortedSet<T> set, Node<T> nodeFrom, T to, boolean isIncluded) {
+	private SortedSet<T> getSetFromNodeToObject(SortedSet<T> set, Node<T> nodeFrom,
+			T to, boolean isIncluded) {
 		SortedSet<T> res = set;
 		Node<T> node = nodeFrom;
-		while (node != null) {
+		while(node != null) {
 			res.add(node.obj);
 			node = getNext(node, to, isIncluded);
 		}
@@ -284,8 +264,9 @@ public class TreeSet<T> implements SortedSet<T> {
 	}
 
 	private Node<T> getNext(Node<T> current, T to, boolean isIncluded) {
-		Node<T> res = current.right != null ? getLeastNode(current.right) : getParentFromLeft(current);
-		if (res == null) {
+		Node<T> res = current.right != null ? getLeastNode(current.right) :
+			getParentFromLeft(current);
+		if(res == null) {
 			return null;
 		}
 		int compRes = comparator.compare(to, res.obj);
@@ -297,7 +278,7 @@ public class TreeSet<T> implements SortedSet<T> {
 		Node<T> res = null;
 		while (current != null) {
 			int resComp = comparator.compare(pattern, current.obj);
-			if (resComp < 0) {
+			if(resComp < 0) {
 				res = current;
 				current = current.left;
 			} else if (resComp > 0) {
@@ -318,9 +299,8 @@ public class TreeSet<T> implements SortedSet<T> {
 
 	public void rotatedTreeDisplay() {
 		rotatedDisplay(root, 0);
-
+		
 	}
-
 	public int height() {
 		return height(root);
 	}
@@ -328,15 +308,14 @@ public class TreeSet<T> implements SortedSet<T> {
 	private int height(Node<T> root) {
 		int res = 0;
 		if (root != null) {
-			int heightRight = height(root.right);// height of the right subtree
-			int heightLeft = height(root.left);
+			int heightRight = height(root.right);//height of the right subtree
+			int heightLeft =  height(root.left);
 			res = 1 + Math.max(heightRight, heightLeft);
 		}
-
+		
 		return res;
-
+		
 	}
-
 	public int width() {
 		return width(root);
 	}
@@ -353,40 +332,135 @@ public class TreeSet<T> implements SortedSet<T> {
 
 	private void rotatedDisplay(Node<T> root, int level) {
 		if (root != null) {
-			rotatedDisplay(root.right, level + 1);
+			rotatedDisplay(root.right, level + 1  );
 			displayRoot(root, level);
 			rotatedDisplay(root.left, level + 1);
 		}
-
+		
 	}
 
 	private void displayRoot(Node<T> root, int level) {
 		printOffset(level);
 		System.out.println(root.obj);
-
+		
 	}
 
 	private void printOffset(int level) {
 		int limit = level * SPACES_PER_LEVEL;
-		for (int i = 0; i < limit; i++) {
+		for(int i = 0; i < limit; i++) {
 			System.out.print(" ");
 		}
-
+		
 	}
-
 	public ArrayList<ArrayList<T>> getObjectsByLevels() {
-		ArrayList<ArrayList<T>> levelsArray = new ArrayList<>();
-		int level = 0;
-		checkLevel(root, level, levelsArray);
-		return levelsArray;
+		ArrayList<ArrayList<T>> res = new ArrayList<>();
+		fillLevelsArray(root, res, 0);
+		return res;
 	}
 
-	private void checkLevel(Node<T> root, int level, ArrayList<ArrayList<T>> levelsArray) {
+	private void fillLevelsArray(Node<T> root, ArrayList<ArrayList<T>> levelsArray, int level) {
+		if(root != null) {
+			//action with root of tree
+			if (level == levelsArray.size()) //check if already there is array for level's elements
+			{
+				//for first function call on the level
+				levelsArray.add(new ArrayList<>());
+			}
+			ArrayList<T> objectsLevel = levelsArray.get(level);
+			objectsLevel.add(root.obj);
+			fillLevelsArray(root.left, levelsArray, level + 1);
+			fillLevelsArray(root.right, levelsArray, level + 1);
+		}
+		
+	}
+	int seqNumber;
+	public TreePresentation<T> getTreePresentation() {
+		TreePresentation<T> res = new TreePresentation<>();
+		ArrayList<ArrayList<TreePresentation.Node<T>>> levels = 
+				new ArrayList<>();
+		//levels.get(i) - array of presentation nodes at level i
+		//levels - array of arrays of presentation nodes
+		seqNumber = 0;
+		int nLevels = height();
+		for(int i = 0; i < nLevels; i++) {
+			levels.add(new ArrayList<>());
+		}
+		fillLevelsPresentation(root,  0, levels);
+		res.levelsNodes = levels;
+		
+		return res;
+	}
+
+	private void fillLevelsPresentation(Node<T> root, int level,
+			ArrayList<ArrayList<TreePresentation.Node<T>>> levels) {
 		if (root != null) {
-			checkLevel(root.right, level + 1, levelsArray);
-			levelsArray.get(level).add(root.obj);
-			checkLevel(root.left, level + 1, levelsArray);
+			fillLevelsPresentation(root.left, level + 1, levels);
+			TreePresentation.Node<T> node = new TreePresentation.Node<>();
+			node.obj = root.obj;
+			node.seqNumber = seqNumber++;
+			levels.get(level).add(node);
+			fillLevelsPresentation(root.right, level + 1, levels);
+		}
+		
+		
+	}
+	public void balance() {
+		Node<T>[] arrayNodes = new Node[size];
+		fillArrayNodes(arrayNodes, root); //fills array of the nodes
+		TreeSet<T> balancedTree = new TreeSet<>();
+		root = balance(balancedTree, arrayNodes, 0, size - 1, null); //0 – left index, size – 1 – right //index; null – parent for new root
+		balancedTree.rotatedTreeDisplay();	
+	}
+
+	private Node<T> balance(TreeSet<T> balancedTree, Node<T>[] arrayNodes, int leftIndex, int rightIndex, Node<T> parent) {
+		int rootIndex = (leftIndex + rightIndex)/2;
+		Node<T> node = arrayNodes[rootIndex];
+		int rightRightIndex = rightIndex;
+		int rightLeftIndex = rootIndex;
+		balancedTree.add(node.obj);
+		balanceLeft(balancedTree, arrayNodes, leftIndex, rootIndex - 1, node);
+		balanceRight(balancedTree, arrayNodes, rightLeftIndex + 1, rightRightIndex, node);
+		return node;  
+	}
+
+	private void balanceRight(TreeSet<T> balancedTree, Node<T>[] arrayNodes, int leftIndex, int rightIndex, Node<T> node) {
+		int rootIndex = (leftIndex + rightIndex)/2;
+		Node<T> node1 = arrayNodes[rootIndex];
+		if(leftIndex > rightIndex) {
+			return;
+		}
+		balancedTree.add(node1.obj);
+		balanceLeft(balancedTree, arrayNodes, leftIndex, rootIndex - 1, node1);
+		balanceRight(balancedTree, arrayNodes, leftIndex + 1, rightIndex, node1);
+	}
+
+	private void balanceLeft(TreeSet<T> balancedTree, Node<T>[] arrayNodes, int leftIndex, int rightIndex, Node<T> node) {
+		int rootIndex = (leftIndex + rightIndex)/2;
+		Node<T> node1 = arrayNodes[rootIndex];
+		if(leftIndex > rightIndex) {
+			return;
+		}
+		balancedTree.add(node1.obj);
+		balanceRight(balancedTree, arrayNodes, rootIndex + 1, rightIndex, node1);
+		balanceLeft(balancedTree, arrayNodes, leftIndex, rootIndex - 1, node1);
+	}
+
+	private void fillArrayNodes(Node<T>[] arrayNodes, Node<T> root) {
+		Node<T> current = getLeastNode(root);
+		int ind = 0;
+		arrayNodes[ind] = current;
+		ind++;
+		while(ind < size) {
+			Node<T> res = current.right != null ? getLeastNode(current.right) :
+				getParentFromLeft(current);
+			arrayNodes[ind] = res;
+			ind++;
+			current = res;
 		}
 	}
-
+	/*Creation of the tree nodes array sorted according to the comparator
+	Finding root node
+	Root.left = balancing of left part; left part -> same left index and right is root index - 1
+	Root.right = balancing of right part; right part -> left index is the root index + 1 and same right index 
+*/
 }
