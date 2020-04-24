@@ -15,7 +15,7 @@ public class MemoryService {
 				if(middleSize != 0 && leftSize > rightSize) {
 					ar = null;
 					rightSize = middleSize;
-					middleSize = (leftSize + rightSize) / 2;
+					middleSize = getMiddleSize(leftSize,rightSize);
 					size = middleSize;
 					ar = new byte[(int) size];
 				}
@@ -24,20 +24,18 @@ public class MemoryService {
 				if (middleSize != 0 && leftSize > rightSize) {
 					
 					leftSize = middleSize;
-					middleSize = (leftSize + rightSize) / 2;
+					middleSize = getMiddleSize(leftSize,rightSize);
 					size = middleSize;
 
 				} else if (middleSize == 0) {
-					middleSize = (leftSize + rightSize) / 2;
+					middleSize = getMiddleSize(leftSize,rightSize);
 					size = middleSize;
 				}
 			}
-//			try {
-//				byte[] ar = new byte[size];
-//				return size;
-//			} catch (OutOfMemoryError e) {
-//				size = size/2;
-//			} 
 		}
+	}
+
+	private static long getMiddleSize(long leftSize, long rightSize) {
+		return (leftSize + rightSize) / 2;
 	}
 }
