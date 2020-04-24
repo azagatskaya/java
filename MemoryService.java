@@ -22,11 +22,9 @@ public class MemoryService {
 				return (int) size;
 			} catch (OutOfMemoryError e) {
 				if (middleSize != 0 && leftSize > rightSize) {
-					
 					leftSize = middleSize;
 					middleSize = getMiddleSize(leftSize,rightSize);
 					size = middleSize;
-
 				} else if (middleSize == 0) {
 					middleSize = getMiddleSize(leftSize,rightSize);
 					size = middleSize;
