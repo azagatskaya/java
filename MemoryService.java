@@ -6,13 +6,13 @@ public class MemoryService {
 		long middleSize = 0;
 		long leftSize = size;
 		long rightSize = 0;
-		
+		//21    16   14   13   10                   0
 		while (true) {
 			try {
 				byte[] ar = new byte[(int) size];
 				if(middleSize != 0 && leftSize > rightSize) {
 					ar = null;
-					rightSize = middleSize;
+					rightSize = middleSize + 1;
 					middleSize = getMiddleSize(leftSize,rightSize);
 					size = middleSize;
 					ar = new byte[(int) size];
@@ -21,9 +21,10 @@ public class MemoryService {
 			} catch (OutOfMemoryError e) {
 				if (middleSize != 0 && leftSize > rightSize) {
 					leftSize = middleSize;
-					middleSize = getMiddleSize(leftSize,rightSize);
+					middleSize = getMiddleSize(leftSize -1,rightSize);
 					size = middleSize;
 				} else if (middleSize == 0) {
+					leftSize--;
 					middleSize = getMiddleSize(leftSize,rightSize);
 					size = middleSize;
 				}
