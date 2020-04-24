@@ -1,7 +1,5 @@
 package telran.util.memory;
 
-import java.math.BigInteger;
-
 public class MemoryService {
 	public static int getAvailableMemoryBlockSize() {
 		long size = Integer.MAX_VALUE;
