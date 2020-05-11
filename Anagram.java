@@ -22,15 +22,6 @@ public class Anagram {
 		return word.split("");
 	}
 
-	private static String[] makeArrayOfLetters(String word) {
-		String[] lettersList = new String[word.length()];
-		for (int i = 0; i < word.length(); i++) {
-			char letterChar = word.charAt(i);
-			String letter = String.valueOf(letterChar);
-			lettersList[i] = letter;
-		}
-		return lettersList;
-		}
 	private static boolean isLengthSame(String word, String anagram) {
 		return word.length() == anagram.length() ? true : false;
 
