@@ -1,8 +1,6 @@
 package telran.text;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class Anagram {
 	public static boolean isAnagram(String word, String anagram) {
