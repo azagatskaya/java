@@ -1,7 +1,5 @@
 package telran.text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class Anagram {
@@ -11,16 +9,9 @@ public class Anagram {
 		}
 		String wordLetters[] = getLetters(word);
 		String anagramLetters[] = getLetters(anagram);
-//		System.out.println(Arrays.toString(wordLetters));
-//		System.out.println(Arrays.toString(anagramLetters));
 		HashMap<String, Integer> letterCountsWord = getLettersCounts(wordLetters);
 		HashMap<String, Integer> letterCountsAnagram = getLettersCounts(anagramLetters);
-		
-		
-//		makeArrayOfLetters(word);
-//		makeArrayOfLetters(anagram);
-
-		return compareMaps(letterCountsWord, letterCountsAnagram);
+	  return compareMaps(letterCountsWord, letterCountsAnagram);
 	}
 	
 	private static boolean compareMaps(HashMap<String, Integer> letterCountsWord, 
@@ -41,23 +32,6 @@ public class Anagram {
 		}
 		return mapCounts;
 	}
-
-//	private static String[] makeArrayOfLetters(String word) {
-////		ArrayList<String> lettersList = new ArrayList<>();//[word.length()];
-////		for(int i = 0; i < word.length();i++) {
-////			char letterChar = word.charAt(i);
-////			String letter = String.valueOf(letterChar);
-////			lettersList.add(letter); 
-//
-//		String[] lettersList = new String[word.length()];
-//		for (int i = 0; i < word.length(); i++) {
-//			char letterChar = word.charAt(i);
-//			String letter = String.valueOf(letterChar);
-//			lettersList[i] = letter;
-//		}
-//		System.out.println(lettersList);
-//		return lettersList;
-//	}
 
 	private static boolean isLengthSame(String word, String anagram) {
 		return word.length() == anagram.length() ? true : false;
