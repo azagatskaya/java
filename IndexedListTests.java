@@ -1,17 +1,6 @@
- package telran.tests;
+package telran.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Comparator;
-
-import java.util.Iterator;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import telran.util.Array;
-import telran.util.IndexedLinkedList;
-import telran.util.IndexedList;
 
 class IndexedListTests {
 	int numbers[] = {10, -8, 70, 75, 30};
@@ -100,7 +89,7 @@ class IndexedListTests {
 		listPersons.sort();
 		assertEquals(personVova, listPersons.get(0));
 		assertEquals(personMoshe, listPersons.get(1));
-		listPersons.sort(new PersonAgeComparator());
+		listPersons.sort((o1,o2) -> o1.getBirthYear() >= o2.getBirthYear() ? -1 : 1);
 		assertEquals(personVova, listPersons.get(1));
 		assertEquals(personMoshe, listPersons.get(0));
 		} catch (Exception e) {
@@ -114,13 +103,13 @@ class IndexedListTests {
 			{"abcd","lm", "lmnopr","x","y","z"};
 		String stringsLengthOrder[]=
 			{"x","y","z","lm","abcd", "lmnopr"};
-		Comparator<String> compLength = new StringLengthComparator();
+		//Comparator<String> compLength = new StringLengthComparator();
 		IndexedList<String> stringsNatural = getListStrings(stringsNaturalOrder);
 		IndexedList<String> stringsLength = getListStrings(stringsLengthOrder);
 		assertEquals(-3, stringsNatural.binarySearch("lmn"));
 		assertEquals(1, stringsNatural.binarySearch("lm"));
-		assertEquals(-5, stringsLength.binarySearch("lmn", compLength));
-		assertEquals(3, stringsLength.binarySearch("lm", compLength ));
+		assertEquals(-5, stringsLength.binarySearch("lmn", (str0, str1) -> str0.length() - str1.length()));
+		assertEquals(3, stringsLength.binarySearch("lm", (str0, str1) -> str0.length() - str1.length()));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -144,7 +133,7 @@ class IndexedListTests {
 	void testFilter() {
 		int expected[] = {10, -8, 70, 30};
 		IndexedList<Integer> listNoEven =
-				listNumbers.filter(new EvenNumbersPredicate());
+				listNumbers.filter((num) -> num % 2 == 0);
 		int actualNumbers[] = getActualNumbers(listNoEven);
 		assertArrayEquals(expected, actualNumbers);
 	}
@@ -153,9 +142,9 @@ class IndexedListTests {
 		//{10, -8, 70, 75, 30};
 		listNumbers.add(75);
 		int expected[] = {75, 75};
-		EvenNumbersPredicate predicateEven = new EvenNumbersPredicate();
-		assertTrue(listNumbers.removeIf(predicateEven));
-		assertFalse(listNumbers.removeIf(predicateEven));
+		//EvenNumbersPredicate predicateEven = new EvenNumbersPredicate();
+		assertTrue(listNumbers.removeIf((num) -> num % 2 == 0));
+		assertFalse(listNumbers.removeIf((num) -> num % 2 == 0));
 		assertArrayEquals(expected,
 				getActualNumbers(listNumbers));
 	}
@@ -171,7 +160,7 @@ class IndexedListTests {
 		listNumbers.add(73);
 		listNumbers.add(3);
 		int []expected = {3, 73, 75, 70, 30, 10, -8};
-		listNumbers.sort(new EvenOddComparator());
+		listNumbers.sort(IndexedListTests::evenOddCompare);
 		assertArrayEquals(expected,
 				getActualNumbers(listNumbers));
 	}
@@ -212,14 +201,18 @@ class IndexedListTests {
 		assertArrayEquals(expected, getActualNumbers(listNumbers));
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	static private int evenOddCompare(Integer n1, Integer n2) {
+		
+		if (n1 % 2 == 1 && n2 % 2 == 0) {
+			return -1;
+		}
+		if (n1 % 2 == 0 && n2 % 2 == 1) {
+			return 1;
+		}
+		if (n1 % 2 == 1 && n2 % 2 == 1) {
+			return n1 - n2;
+		}
+		return n2 - n1;
+	}
 
 }
